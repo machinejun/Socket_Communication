@@ -17,21 +17,21 @@ public class User extends Thread {
 	private ServerData serverData;
 
 	private String nickName;
-	private int roomNumber;
 	private Socket userSocket;
-
-	private InputStream inputStream;
-	private OutputStream outputStream;
+	
 	private DataInputStream dataInputStream;
 	private DataOutputStream dataOutputStream;
+	
+	StringBuffer check;
 
 	public User(Socket userSocket, ServerService serverService, ServerData serverData) {
 		this.serverData = serverData;
 		this.userSocket = userSocket;
 		this.serverService = serverService;
 		nickName = "";
-		roomNumber = 0;
 		serverData.getUserlist().add(this);
+		check = new StringBuffer();
+		check.append("");
 	}
 
 	@Override
@@ -42,11 +42,8 @@ public class User extends Thread {
 			public void run() {
 				while (true) {
 					try {
-						inputStream = userSocket.getInputStream();
-						dataInputStream = new DataInputStream(inputStream);
-
-						outputStream = userSocket.getOutputStream();
-						dataOutputStream = new DataOutputStream(outputStream);
+						dataInputStream = new DataInputStream(userSocket.getInputStream());
+						dataOutputStream = new DataOutputStream(userSocket.getOutputStream());
 
 						String msg = dataInputStream.readUTF();
 						serverService.writeMsg(msg);
@@ -62,18 +59,14 @@ public class User extends Thread {
 	}
 
 	public void sentMsg(String msg) {
-		System.out.println(nickName +">>> sentMsg: " + msg);
 		try {
 			dataOutputStream.writeUTF(msg);
+			check.append(msg);
+			System.out.println("check: " + msg);
 			dataOutputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
-
-	public void enterRoom() {
-		// serverData.getRoomlist().get(roomNumber)
-	}
-
 }

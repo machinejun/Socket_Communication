@@ -18,7 +18,7 @@ import lombok.Data;
 public class ServerServiceImpl implements ServerService {
 
 	private ServerService mContext;
-	private ServerView serverView; 
+	private ServerView serverView;
 
 	private ServerSocket serverSocket;
 	private ServerData serverData;
@@ -34,12 +34,11 @@ public class ServerServiceImpl implements ServerService {
 		dataList = ServerData.getinstance();
 
 	}
-	
+
 	@Override
 	public void writeMsg(String msg) {
 		serverView.showLog(msg);
 	}
-	
 
 	@Override
 	public void startNetwork(int portNumber) {
@@ -86,16 +85,16 @@ public class ServerServiceImpl implements ServerService {
 
 		switch (protocol[0]) {
 		case "Admission":
-			
+
 			for (User u : dataList.getUserlist()) {
-				if(u.getNickName().equals("")) {
+				if (u.getNickName().equals("")) {
 					System.out.println(u.getNickName());
 					u.setNickName(protocol[1]);
 				}
 			}
-	
+
 			String admissionlog = "NewUser/" + protocol[1];
-			
+
 			broadcast(admissionlog);
 			BasicDataRecept(protocol[1]);
 			break;
@@ -139,7 +138,6 @@ public class ServerServiceImpl implements ServerService {
 
 	@Override
 	public void getMessage(String msg) {
-		System.out.println("getMessage: " + msg);
 		StringTokenizer dividing = new StringTokenizer(msg, "/");
 		String logHead = dividing.nextToken();
 		String logBody = dividing.nextToken();
@@ -151,9 +149,8 @@ public class ServerServiceImpl implements ServerService {
 
 		protocol[0] = logHead;
 		protocol[1] = logBody;
-		
-		runServer(protocol);
 
+		runServer(protocol);
 	}
 
 	@Override
@@ -169,40 +166,45 @@ public class ServerServiceImpl implements ServerService {
 	public void BasicDataRecept(String nickName) {
 		User user = null;
 		for (User u : dataList.getUserlist()) {
-			if(u.getNickName().equals(nickName)) {
+			if (u.getNickName().equals(nickName)) {
 				user = u;
 			}
 		}
-		
-		System.out.println("basic: " + user.getNickName());
-		
+
 		for (User u : dataList.getUserlist()) {
 			user.sentMsg("OldUser/" + u.getNickName());
 		}
-		
+
 		try {
-			for(InnerRoom room : dataList.getRoomlist()) {
+			for (InnerRoom room : dataList.getRoomlist()) {
 				user.sentMsg("OldRoom/" + room.getRoomName());
 			}
 		} catch (NullPointerException e) {
 		}
 	}
-	
 
 	@Override
 	public void createRoom(String msg) {
 		StringTokenizer dividing = new StringTokenizer(msg, "@");
-		String nickname = dividing.nextToken();
 		String roomNumber = dividing.nextToken();
+		String name = dividing.nextToken();
 		User cUser = null;
 
-		for (User user : serverData.getUserlist()) {
-			user.getNickName().equals(nickname);
-			cUser = user;
+		for (User user : dataList.getUserlist()) {
+			if (user.getNickName().equals(name)) {
+				cUser = user;
+				break;
+
+			}
+
 		}
 
 		InnerRoom innerRoom = new InnerRoom(roomNumber, cUser);
-		serverData.getRoomlist().add(innerRoom);
+		dataList.getRoomlist().add(innerRoom);
+
+		for (InnerRoom room : dataList.getRoomlist()) {
+			System.out.println("Create: " + room.getRoomUser().get(0).getNickName());
+		}
 
 		broadcast("NewRoom/" + roomNumber);
 	}
@@ -212,22 +214,32 @@ public class ServerServiceImpl implements ServerService {
 		StringTokenizer dividing = new StringTokenizer(log, "@");
 		String roomNumber = dividing.nextToken();
 		String nickname = dividing.nextToken();
+		System.out.println(nickname);
 		User eUser = null;
 
-		for (User user : serverData.getUserlist()) {
-			user.getNickName().equals(nickname);
-			eUser = user;
-		}
-
-		for (InnerRoom room : serverData.getRoomlist()) {
-			if (room.getRoomName().equals(roomNumber)) {
-				room.getRoomUser().add(eUser);
-				for (User user : room.getRoomUser()) {
-					user.sentMsg("EnterRoom/" + nickname + "@" + roomNumber);
-				}
-
+		for (User user : dataList.getUserlist()) {
+			if (user.getNickName().equals(nickname)) {
+				eUser = user;
+				break;
 			}
 		}
+		System.out.println("eUser: " + eUser.getNickName());
+
+		InnerRoom room1 = null;
+		for (InnerRoom room : dataList.getRoomlist()) {
+			if (room.getRoomName().equals(roomNumber)) {
+				room1 = room;
+				break;
+			}
+		}
+		
+		room1.getRoomUser().add(eUser);
+
+		for (User user : room1.getRoomUser()) {
+			System.out.println("enterRoom: " + user.getNickName());
+			user.sentMsg("EnterRoom/" + nickname + "@" + roomNumber);
+		}
+
 	}
 
 	@Override
@@ -236,7 +248,7 @@ public class ServerServiceImpl implements ServerService {
 		String roomNumber = dividing.nextToken();
 		String nickName = dividing.nextToken();
 
-		for (InnerRoom room : serverData.getRoomlist()) {
+		for (InnerRoom room : dataList.getRoomlist()) {
 			if (room.getRoomName().equals(roomNumber)) {
 				for (User user : room.getRoomUser()) {
 					if (user.getNickName().equals(nickName)) {
@@ -247,23 +259,31 @@ public class ServerServiceImpl implements ServerService {
 				}
 
 			}
+
+			if (room.getRoomUser() == null) {
+				String dRoomNumber = room.getRoomName();
+				room = null;
+				broadcast("Remove/" + dRoomNumber);
+			}
 		}
+
 	}
 
 	@Override
 	public void printLog(String totalLog) {
-		Calendar calender = Calendar.getInstance();
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd");
-		String date = "Log(" + format.format(calender) + ").txt";
+		// Calendar calender = Calendar.getInstance();
+		// SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		// String date = format.format(calender);
+		// String path = "Log" + date + ".txt"; 
 
-		try {
-			FileWriter writer = new FileWriter(new File(date));
-			writer.write(totalLog);
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// 	FileWriter writer = new FileWriter(new File(path));
+		// 	writer.write(totalLog);
+		// 	writer.flush();
+		// 	writer.close();
+		// } catch (IOException e) {
+		// 	e.printStackTrace();
+		// }
 
 	}
 
@@ -275,15 +295,18 @@ public class ServerServiceImpl implements ServerService {
 		String nickname = dividing.nextToken();
 		String contents = dividing.nextToken();
 
-		for (InnerRoom room : serverData.getRoomlist()) {
+		InnerRoom room1 = null;
+		for (InnerRoom room : dataList.getRoomlist()) {
 			if (room.getRoomName().equals(roomNumber)) {
-				for (User user : room.getRoomUser()) {
-					if (!(user.getNickName().equals(nickname))) {
-						user.sentMsg("Chatting/" + nickname + ": " + contents);
-					}
-
-				}
+				room1 = room;
+				break;
 			}
 		}
+		
+		for (User user : room1.getRoomUser()) {
+			System.out.println("chatting>>>> " + user.getNickName());
+			user.sentMsg("Chatting/" + nickname + ":  " + contents + "\n");
+		}
+
 	}
 }

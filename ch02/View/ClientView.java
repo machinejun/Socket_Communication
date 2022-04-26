@@ -195,6 +195,9 @@ public class ClientView extends JFrame implements ActionListener{
 				String roomNumber = rooms.get(i);
 				JOptionPane.showInputDialog( roomNumber +"에 입장합니다.");
 				clientService.enterRoom(roomNumber);
+				makingRoomBtn.setEnabled(false);
+				roomList.setEnabled(false);
+				jTabbedPane.addTab("chating", thirdPanel);
 			}
 		});
 		
@@ -205,7 +208,8 @@ public class ClientView extends JFrame implements ActionListener{
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String chat = chatArea.getText();
-					chatLogArea.append(chat + "\n");
+					//chatLogArea.append(chat + "\n");
+					clientService.chat(chat);
 					System.out.println("채팅 전송");
 				}
 			}
@@ -239,18 +243,27 @@ public class ClientView extends JFrame implements ActionListener{
 		else if(e.getSource().equals(makingRoomBtn)) {
 			System.out.println("방을 생성합니다.");
 			String roomName = JOptionPane.showInputDialog("방이름을 입력하세요");
+			clientService.createRoom(roomName);
+			makingRoomBtn.setEnabled(false);
+			roomList.setEnabled(false);
 			jTabbedPane.addTab("chating", thirdPanel);
 		}
 		else if(e.getSource().equals(enterRoomBtn)) {
 			System.out.println("방에 입장합니다.");
+			makingRoomBtn.setEnabled(false);
+			roomList.setEnabled(false);
 			jTabbedPane.addTab("chating", thirdPanel);
 		}
 		else if(e.getSource().equals(exitRoomBtn)) {
 			System.out.println("방을 나갑니다.");
+			clientService.exitRoom();
+			makingRoomBtn.setEnabled(true);
+			roomList.setEnabled(true);
 			jTabbedPane.remove(1);
 		}else {
 			String chat = chatArea.getText();
-			chatLogArea.append(chat + "\n");
+			//chatLogArea.append(chat + "\n");
+			clientService.chat(chat);
 			System.out.println("채팅 전송");
 		}
 	}
@@ -277,6 +290,15 @@ public class ClientView extends JFrame implements ActionListener{
 			}
 		}
 		rooms.add(roomNumber);
+		roomList.setListData(rooms);
+	}
+	
+	public void roomRemove(String roomNumber) {
+		for (String room : rooms) {
+			if(room.equals(roomNumber)) {
+				rooms.remove(room);
+			}
+		}
 		roomList.setListData(rooms);
 	}
 

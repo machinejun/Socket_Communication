@@ -91,20 +91,19 @@ public class ClientServiceImpl implements ClientService {
 							roomNumber = d.nextToken();
 							break;
 						case "Message":
-							JOptionPane.showConfirmDialog(null, protocol[1]);
+							JOptionPane.showMessageDialog(null, protocol[1]);
 							
 						case "ExitRoom":
 							if(protocol[1].equals("ok")) {
 								roomNumber = "0";
-							}else {
-								
+								JOptionPane.showMessageDialog(null, "퇴장하였습니다");
 							}
-							
-							
 							break;
 						case "Chatting":
 							clientView.getChatLogArea().append(protocol[1]);
 							break;
+						case "Remove":
+							clientView.roomRemove(protocol[1]);
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -119,6 +118,7 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public void enterRoom(String roomNumber) {
 		String msg = "EnterRoom/" + roomNumber + "@" + nickName;
+		this.roomNumber = roomNumber;
 		sentMsg(msg);
 		
 	}
@@ -126,12 +126,14 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public void createRoom(String roomNumber) {
 		String msg = "CreateRoom/" + roomNumber + "@" + nickName;
+		this.roomNumber = roomNumber;
 		sentMsg(msg);
 	}
 
 	@Override
 	public void exitRoom() {
 		String msg = "ExitRoom/" + roomNumber + "@" + nickName;
+		this.roomNumber = "0";
 		sentMsg(msg);
 
 	}
