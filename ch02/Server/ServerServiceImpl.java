@@ -113,22 +113,18 @@ public class ServerServiceImpl implements ServerService {
 			}
 			break;
 		case "CreateRoom":
-			// CreateRoom/nickName@RoomNumber
 			createRoom(protocol[1]);
 			break;
 
 		case "Chatting":
-			// Chatting/roomNumber>nickname@contents
 			chatting(protocol[1]);
 			break;
 
 		case "EnterRoom":
-			// EnterRoom/roomnumber@nickname
 			enterRoom(protocol[1]);
 			break;
 
 		case "ExitRoom":
-			// ExitRoom/RoomNumber@Nickname
 			exitRoom(protocol[1]);
 		default:
 
@@ -141,10 +137,6 @@ public class ServerServiceImpl implements ServerService {
 		StringTokenizer dividing = new StringTokenizer(msg, "/");
 		String logHead = dividing.nextToken();
 		String logBody = dividing.nextToken();
-
-		System.out.println("logHead: " + logHead);
-		System.out.println("logBody: " + logBody);
-
 		String[] protocol = new String[2];
 
 		protocol[0] = logHead;
@@ -158,7 +150,6 @@ public class ServerServiceImpl implements ServerService {
 		System.out.println("broadcast: " + msg);
 		for (User user : dataList.getUserlist()) {
 			user.sentMsg(msg);
-			System.out.println("broadcast: " + user.getNickName() + "전송");
 		}
 	}
 
@@ -202,9 +193,6 @@ public class ServerServiceImpl implements ServerService {
 		InnerRoom innerRoom = new InnerRoom(roomNumber, cUser);
 		dataList.getRoomlist().add(innerRoom);
 
-		for (InnerRoom room : dataList.getRoomlist()) {
-			System.out.println("Create: " + room.getRoomUser().get(0).getNickName());
-		}
 
 		broadcast("NewRoom/" + roomNumber);
 	}
@@ -223,7 +211,6 @@ public class ServerServiceImpl implements ServerService {
 				break;
 			}
 		}
-		System.out.println("eUser: " + eUser.getNickName());
 
 		InnerRoom room1 = null;
 		for (InnerRoom room : dataList.getRoomlist()) {
@@ -236,7 +223,6 @@ public class ServerServiceImpl implements ServerService {
 		room1.getRoomUser().add(eUser);
 
 		for (User user : room1.getRoomUser()) {
-			System.out.println("enterRoom: " + user.getNickName());
 			user.sentMsg("EnterRoom/" + nickname + "@" + roomNumber);
 		}
 
@@ -247,43 +233,47 @@ public class ServerServiceImpl implements ServerService {
 		StringTokenizer dividing = new StringTokenizer(log, "@");
 		String roomNumber = dividing.nextToken();
 		String nickName = dividing.nextToken();
-
-		for (InnerRoom room : dataList.getRoomlist()) {
-			if (room.getRoomName().equals(roomNumber)) {
-				for (User user : room.getRoomUser()) {
-					if (user.getNickName().equals(nickName)) {
-						room.getRoomUser().remove(user);
-						user.sentMsg("ExitRoom/ok");
-					}
-					user.sentMsg("ExitRoom/" + nickName);
-				}
-
-			}
-
-			if (room.getRoomUser() == null) {
-				String dRoomNumber = room.getRoomName();
-				room = null;
-				broadcast("Remove/" + dRoomNumber);
+		InnerRoom r = null;
+		
+		for (User user : dataList.getUserlist()) {
+			if(user.getNickName().equals(nickName)) {
+				user.exitRoom(roomNumber);
+				user.sentMsg("ExitRoom/ok");
 			}
 		}
+		
+		for (InnerRoom room : dataList.getRoomlist()) {
+			if (room.getRoomName().equals(roomNumber)) {
+				if (room.getRoomUser() == null || room.getRoomUser().size() == 0) {
+					broadcast("Remove/" + roomNumber);
+				}else{
+					for (User user : room.getRoomUser()) {
+						user.sentMsg("ExitRoom/" + nickName);
+					}
+				}
+			}
+		}
+	
+		
 
 	}
 
 	@Override
 	public void printLog(String totalLog) {
-		// Calendar calender = Calendar.getInstance();
-		// SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-		// String date = format.format(calender);
-		// String path = "Log" + date + ".txt"; 
-
-		// try {
-		// 	FileWriter writer = new FileWriter(new File(path));
-		// 	writer.write(totalLog);
-		// 	writer.flush();
-		// 	writer.close();
-		// } catch (IOException e) {
-		// 	e.printStackTrace();
-		// }
+		Calendar calender = Calendar.getInstance();
+		SimpleDateFormat f = new SimpleDateFormat("yyyy.MM.dd");
+		String date = f.format(calender.getTime());
+		String path = "Log" + date + ".txt"; 
+		System.out.println(totalLog);
+		System.out.println(path);
+		try {
+			FileWriter writer = new FileWriter(new File(path));
+			writer.write(totalLog);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 

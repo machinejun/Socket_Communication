@@ -113,6 +113,7 @@ public class ServerView extends JFrame implements ActionListener{
 			System.out.println("print Server Log");
 			String totalLog = logbox.getText();
 			serverService.printLog(totalLog);
+			JOptionPane.showMessageDialog(null, "출력완료");
 		}else if(e.getSource().equals(endButton)) {
 			System.out.println("End program!!!!!");
 			System.exit(0);

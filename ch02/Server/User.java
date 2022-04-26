@@ -57,6 +57,17 @@ public class User extends Thread {
 		}).start();
 
 	}
+	public void exitRoom(String roomNumber) {
+		InnerRoom r = null;
+		for (InnerRoom room : serverData.getRoomlist()) {
+			if (room.getRoomName().equals(roomNumber)) {
+				r = room;
+				break;
+			}
+		}
+		r.getRoomUser().remove(this);
+	}
+	
 
 	public void sentMsg(String msg) {
 		try {
