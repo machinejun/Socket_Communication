@@ -49,7 +49,16 @@ public class User extends Thread {
 						serverService.writeMsg(msg);
 						serverService.getMessage(msg);
 					} catch (IOException e) {
-						// TODO: handle exception
+						try {
+							disconnect();
+							dataInputStream.close();
+							dataOutputStream.close();
+							break;
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 					}
 
 				}
@@ -66,6 +75,19 @@ public class User extends Thread {
 			}
 		}
 		r.getRoomUser().remove(this);
+	}
+	
+	
+	
+	private void disconnect() {
+		serverData.getUserlist().remove(this);
+		for (InnerRoom room : serverData.getRoomlist()) {
+			if(room.getRoomUser().contains(this)) {
+				room.getRoomUser().remove(this);
+			}
+		}
+		serverService.writeMsg("Disconnect/" + nickName);
+		serverService.broadcast("Disconnect/" + nickName);
 	}
 	
 

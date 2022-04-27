@@ -33,5 +33,28 @@ public class ServerData {
 
 	public void setRoomlist(Vector<InnerRoom> roomlist) {
 		this.roomlist = roomlist;
-	}	
+	}
+	
+	public User checkUserNick(String nickName) {
+		User checkUser = null;
+		for (User user : userlist) {
+			if(user.getNickName().equals(nickName)) {
+				checkUser = user;
+				break;
+			}
+		}
+		return checkUser;
+	}
+	
+	public InnerRoom checkRoonNum(String roomNumber) {
+		InnerRoom checkRoom = null;
+		for (InnerRoom innerRoom : roomlist) {
+			if(innerRoom.getRoomName().equals(roomNumber)) {
+				checkRoom = innerRoom;
+				break;
+			}
+		}
+		return checkRoom;
+	}
+
 }

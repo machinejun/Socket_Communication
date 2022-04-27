@@ -18,7 +18,16 @@ public class InnerRoom {
 		roomUser.add(user);
 	}
 	
-	
+	public User checkRoomUser(String nickName) {
+		User checkUser = null;
+		for (User user : roomUser) {
+			if(user.getNickName().equals(nickName)) {
+				checkUser = user;
+				break;
+			}
+		}
+		return checkUser;
+	}
 	
 	
 		

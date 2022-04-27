@@ -1,5 +1,6 @@
 package ch02.View;
 
+import java.awt.Font;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,6 +52,7 @@ public class ClientView extends JFrame implements ActionListener {
 	private JLabel nickNametext;
 	private JTextField userNicNameArea;
 	private JButton startBtn;
+	private JLabel someOneName;
 
 	private JPanel secondPanel;
 	private JList userList;
@@ -91,6 +93,7 @@ public class ClientView extends JFrame implements ActionListener {
 		nickNametext = new JLabel("NickName : ");
 		userNicNameArea = new JTextField("write user NickName");
 		startBtn = new JButton("Start Connect");
+		someOneName = new JLabel("Who Are you?");
 
 		secondPanel = new JPanel();
 		userList = new JList<String>();
@@ -112,7 +115,8 @@ public class ClientView extends JFrame implements ActionListener {
 		setContentPane(bgImagePanel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(500, 500);
-
+		
+		bgImagePanel.add(someOneName);
 		bgImagePanel.add(jTabbedPane);
 		jTabbedPane.addTab("login", firstPanel);
 		firstPanel.add(iptext);
@@ -122,6 +126,7 @@ public class ClientView extends JFrame implements ActionListener {
 		firstPanel.add(nickNametext);
 		firstPanel.add(userNicNameArea);
 		firstPanel.add(startBtn);
+		
 
 		secondPanel.add(userList);
 		secondPanel.add(roomList);
@@ -137,9 +142,13 @@ public class ClientView extends JFrame implements ActionListener {
 	}
 
 	private void initLayout() {
+		
 		setVisible(true);
 		jTabbedPane.setBounds(50, 100, 400, 300);
-
+		someOneName.setBounds(140, 30, 300, 50);
+		someOneName.setFont(new Font("d2coding", 1, 30));
+		someOneName.setVisible(true);
+		
 		firstPanel.setLayout(null);
 		iptext.setBounds(100, 30, 50, 50);
 		userIPArea.setBounds(130, 40, 160, 30);
@@ -148,6 +157,8 @@ public class ClientView extends JFrame implements ActionListener {
 		nickNametext.setBounds(100, 130, 100, 50);
 		userNicNameArea.setBounds(170, 140, 120, 30);
 		startBtn.setBounds(170, 200, 120, 30);
+		
+		
 
 		secondPanel.setLayout(null);
 		userList.setBounds(65, 30, 120, 170);
@@ -200,6 +211,7 @@ public class ClientView extends JFrame implements ActionListener {
 					clientService.enterRoom(roomNumber);
 					makingRoomBtn.setEnabled(false);
 					roomList.setEnabled(false);
+					exitRoomBtn.setEnabled(true);
 					jTabbedPane.addTab("chating", thirdPanel);
 				} catch (ArrayIndexOutOfBoundsException e2) {
 				}
@@ -234,6 +246,7 @@ public class ClientView extends JFrame implements ActionListener {
 				if (loginFlag) {
 					jTabbedPane.remove(0);
 					jTabbedPane.addTab("waiting room", secondPanel);
+					someOneName.setText( "I am " + nickName);
 					exitRoomBtn.setEnabled(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "로그인 실패( 포트번호를 확인해주세요 )");
@@ -303,6 +316,11 @@ public class ClientView extends JFrame implements ActionListener {
 	public void roomRemove(String roomNumber) {
 		rooms.remove(roomNumber);
 		roomList.setListData(rooms);
+	}
+	
+	public void userRemove(String nickName) {
+		users.remove(nickName);
+		userList.setListData(users);
 	}
 
 	public static void main(String[] args) {

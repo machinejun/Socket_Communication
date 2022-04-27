@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -39,12 +40,15 @@ public class ClientServiceImpl implements ClientService {
 	public boolean login(String ip, int portNumber, String nickName) {
 		try {
 			socket = new Socket(ip, portNumber);
+			
+			
 			inputStream = socket.getInputStream();
 			dataInputStream = new DataInputStream(inputStream);
 
 			outputStream = socket.getOutputStream();
 			dataOutputStream = new DataOutputStream(outputStream);
-			System.out.println("login success");
+			
+			
 			this.nickName = nickName;
 			roomNumber = "0";
 			
@@ -104,9 +108,14 @@ public class ClientServiceImpl implements ClientService {
 							break;
 						case "Remove":
 							clientView.roomRemove(protocol[1]);
+							break;
+						case "Disconnect":
+							clientView.userRemove(protocol[1]);
 						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
+					} catch(SocketException e){
+						JOptionPane.showMessageDialog(null, "서바가 다운되었습니다.");
+						System.exit(0);
+					}catch (IOException e) {
 						e.printStackTrace();
 					}
 				}

@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -98,8 +100,12 @@ public class ServerView extends JFrame implements ActionListener{
 			try {
 				int portNumber = Integer.parseInt(inputPortArea.getText());
 				if(portNumber > 1023 && portNumber < 20000) {
-					System.out.println("서비스 시작");
+					Calendar calender = Calendar.getInstance();
+					SimpleDateFormat f = new SimpleDateFormat("yyyy.MM.dd");
+					String date = f.format(calender.getTime());
 					serverService.startNetwork(portNumber);
+					serverService.writeMsg("service Start" + "(" + date + ")");
+					serverService.writeMsg("------------------");
 					startButton.setEnabled(false);
 					printLogButton.setEnabled(true);
 					endButton.setEnabled(true);
