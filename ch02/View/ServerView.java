@@ -58,6 +58,7 @@ public class ServerView extends JFrame implements ActionListener{
 		setVisible(true);
 		setSize(520, 500);
 		setLayout(null);
+		setResizable(false);
 		
 		logArea.setVisible(true);
 		logbox.setEditable(false);

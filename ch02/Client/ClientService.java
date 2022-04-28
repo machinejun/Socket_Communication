@@ -5,7 +5,7 @@ import ch02.Server.User;
 public interface ClientService {
 	
 	boolean login(String ip, int portNumber, String nickName);
-	void runServer();
+	void runClient();
 	void sentMsg(String log);
 	void createRoom(String roomNumber);
 	void enterRoom(String roomNumber);

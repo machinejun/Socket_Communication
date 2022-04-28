@@ -59,7 +59,6 @@ public class ClientView extends JFrame implements ActionListener {
 	private JList roomList;
 	private JButton makingRoomBtn;
 	private JButton sentMsgBtn;
-	private JButton enterRoomBtn;
 	private JButton exitRoomBtn;
 
 	private JPanel thirdPanel;
@@ -103,7 +102,6 @@ public class ClientView extends JFrame implements ActionListener {
 		rooms = new Vector<String>();
 		roomList.setListData(rooms);
 		makingRoomBtn = new JButton("방생성");
-		enterRoomBtn = new JButton("입장");
 		exitRoomBtn = new JButton("방나가기");
 
 		thirdPanel = new JPanel();
@@ -115,6 +113,7 @@ public class ClientView extends JFrame implements ActionListener {
 		setContentPane(bgImagePanel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(500, 500);
+		setResizable(false);
 		
 		bgImagePanel.add(someOneName);
 		bgImagePanel.add(jTabbedPane);
@@ -131,7 +130,6 @@ public class ClientView extends JFrame implements ActionListener {
 		secondPanel.add(userList);
 		secondPanel.add(roomList);
 		secondPanel.add(makingRoomBtn);
-		secondPanel.add(enterRoomBtn);
 		secondPanel.add(exitRoomBtn);
 
 		thirdPanel.add(chatLogBox);
@@ -145,9 +143,10 @@ public class ClientView extends JFrame implements ActionListener {
 		
 		setVisible(true);
 		jTabbedPane.setBounds(50, 100, 400, 300);
-		someOneName.setBounds(140, 30, 300, 50);
+		someOneName.setBounds(100, 30, 300, 50);
 		someOneName.setFont(new Font("d2coding", 1, 30));
 		someOneName.setVisible(true);
+		someOneName.setHorizontalAlignment(JLabel.CENTER);
 		
 		firstPanel.setLayout(null);
 		iptext.setBounds(100, 30, 50, 50);
@@ -164,7 +163,6 @@ public class ClientView extends JFrame implements ActionListener {
 		userList.setBounds(65, 30, 120, 170);
 		roomList.setBounds(215, 30, 120, 170);
 		makingRoomBtn.setBounds(105, 220, 80, 30);
-		enterRoomBtn.setBounds(195, 220, 80, 30);
 		exitRoomBtn.setBounds(285, 220, 90, 30);
 
 		thirdPanel.setLayout(null);
@@ -176,7 +174,6 @@ public class ClientView extends JFrame implements ActionListener {
 	private void addEventListner() {
 		startBtn.addActionListener(this);
 		makingRoomBtn.addActionListener(this);
-		enterRoomBtn.addActionListener(this);
 		exitRoomBtn.addActionListener(this);
 		sentchatBtn.addActionListener(this);
 		userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -224,8 +221,8 @@ public class ClientView extends JFrame implements ActionListener {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String chat = chatArea.getText();
-					// chatLogArea.append(chat + "\n");
 					clientService.chat(chat);
+					chatArea.setText("");
 					System.out.println("채팅 전송");
 				}
 			}
@@ -268,12 +265,6 @@ public class ClientView extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(null, "한글자 이상 입력하세요");
 			}
 
-		} else if (e.getSource().equals(enterRoomBtn)) {
-			System.out.println("방에 입장합니다.");
-			makingRoomBtn.setEnabled(false);
-			roomList.setEnabled(false);
-			exitRoomBtn.setEnabled(true);
-			jTabbedPane.addTab("chating", thirdPanel);
 		} else if (e.getSource().equals(exitRoomBtn)) {
 			System.out.println("방을 나갑니다.");
 			clientService.exitRoom();
@@ -283,8 +274,8 @@ public class ClientView extends JFrame implements ActionListener {
 			jTabbedPane.remove(1);
 		} else {
 			String chat = chatArea.getText();
-			// chatLogArea.append(chat + "\n");
 			clientService.chat(chat);
+			chatArea.setText("");
 			System.out.println("채팅 전송");
 		}
 	}

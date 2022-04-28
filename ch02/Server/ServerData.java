@@ -35,6 +35,12 @@ public class ServerData {
 		this.roomlist = roomlist;
 	}
 	
+	/**
+	 * 해당 닉네임을 가진 유저를 찾는 기능
+	 * 
+	 * @param nickName
+	 * @return 해당 nickName의 유저
+	 */
 	public User checkUserNick(String nickName) {
 		User checkUser = null;
 		for (User user : userlist) {
@@ -46,6 +52,12 @@ public class ServerData {
 		return checkUser;
 	}
 	
+	/**
+	 * 해당 룸넘버를 가진 InnerRoom을 찾는 기능
+	 * 
+	 * @param roomNumber
+	 * @return 해당 roomNumber을 가진 InnerRoom
+	 */
 	public InnerRoom checkRoonNum(String roomNumber) {
 		InnerRoom checkRoom = null;
 		for (InnerRoom innerRoom : roomlist) {

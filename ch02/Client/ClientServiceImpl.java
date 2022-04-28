@@ -7,17 +7,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
-import ch02.Server.User;
 import ch02.View.ClientView;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class ClientServiceImpl implements ClientService {
 
 	private ClientView clientView;
@@ -54,7 +53,7 @@ public class ClientServiceImpl implements ClientService {
 			
 			String msg = "Admission" + "/" + nickName;
 			sentMsg(msg);
-			runServer();
+			runClient();
 			return true;
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "연결실패!", "알림", JOptionPane.ERROR_MESSAGE);
@@ -64,7 +63,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public void runServer() {
+	public void runClient() {
 
 		new Thread(new Runnable() {
 			@Override
@@ -80,6 +79,9 @@ public class ClientServiceImpl implements ClientService {
 						case "NewUser":
 							clientView.userUpdate(protocol[1]);
 							break;
+						case "Rename":
+							nickName = protocol[1];
+							clientView.getSomeOneName().setText("I am" + protocol[1]);
 						case "OldUser":
 							clientView.userUpdate(protocol[1]);
 							break;
@@ -106,10 +108,12 @@ public class ClientServiceImpl implements ClientService {
 						case "Chatting":
 							clientView.getChatLogArea().append(protocol[1]);
 							break;
-						case "Remove":
+						case "roomRemove":
+							// protocol : roomRemove/유저가 없는 방의 roomNumber
 							clientView.roomRemove(protocol[1]);
 							break;
 						case "Disconnect":
+							// protocol : Disconnect/접속이 끊어진 유저 닉네임
 							clientView.userRemove(protocol[1]);
 						}
 					} catch(SocketException e){

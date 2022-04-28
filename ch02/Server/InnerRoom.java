@@ -18,6 +18,12 @@ public class InnerRoom {
 		roomUser.add(user);
 	}
 	
+	/**
+	 * 해당방에 들어있는 유저를 검색하는 기능
+	 * 
+	 * @param nickName
+	 * @return
+	 */
 	public User checkRoomUser(String nickName) {
 		User checkUser = null;
 		for (User user : roomUser) {

@@ -3,8 +3,6 @@ package ch02.Server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 import lombok.Getter;
@@ -22,7 +20,6 @@ public class User extends Thread {
 	private DataInputStream dataInputStream;
 	private DataOutputStream dataOutputStream;
 	
-	StringBuffer check;
 
 	public User(Socket userSocket, ServerService serverService, ServerData serverData) {
 		this.serverData = serverData;
@@ -30,8 +27,6 @@ public class User extends Thread {
 		this.serverService = serverService;
 		nickName = "";
 		serverData.getUserlist().add(this);
-		check = new StringBuffer();
-		check.append("");
 	}
 
 	@Override
@@ -66,6 +61,10 @@ public class User extends Thread {
 		}).start();
 
 	}
+	/**
+	 * 해당유저가 방을 나갔을 경우 InnerRoom의 User데이터에서 자신을 삭제한다.
+	 * @param roomNumber
+	 */
 	public void exitRoom(String roomNumber) {
 		InnerRoom r = null;
 		for (InnerRoom room : serverData.getRoomlist()) {
@@ -78,7 +77,10 @@ public class User extends Thread {
 	}
 	
 	
-	
+	/**
+	 * 접속이 끊어 졌을 경우 서버에 끊어짐을 기록한 후 유저들에게 해당 유저의
+	 * 접속이 끊어졌다는 것을 알린다.
+	 */
 	private void disconnect() {
 		serverData.getUserlist().remove(this);
 		for (InnerRoom room : serverData.getRoomlist()) {
@@ -90,12 +92,13 @@ public class User extends Thread {
 		serverService.broadcast("Disconnect/" + nickName);
 	}
 	
-
+	/**
+	 * 클라이언트로 부터 전송받은 메세지를 서버에 전송하는 기능
+	 * @param msg
+	 */
 	public void sentMsg(String msg) {
 		try {
 			dataOutputStream.writeUTF(msg);
-			check.append(msg);
-			System.out.println("check: " + msg);
 			dataOutputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
