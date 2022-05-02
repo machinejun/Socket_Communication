@@ -338,4 +338,8 @@ public class ServerServiceImpl implements ServerService {
 		}
 
 	}
+	
+	public static void main(String[] args) {
+		ServerServiceImpl Server = new ServerServiceImpl(new ServerView());
+	}
 }

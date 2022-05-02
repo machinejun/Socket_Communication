@@ -314,8 +314,5 @@ public class ClientView extends JFrame implements ActionListener {
 		userList.setListData(users);
 	}
 
-	public static void main(String[] args) {
-		new ClientView();
-	}
 
 }

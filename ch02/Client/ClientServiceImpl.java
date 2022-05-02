@@ -186,6 +186,10 @@ public class ClientServiceImpl implements ClientService {
 
 		return protocol;
 	}
+	
+	public static void main(String[] args) {
+		ClientServiceImpl client = new ClientServiceImpl(new ClientView());
+	}
 
 	
 

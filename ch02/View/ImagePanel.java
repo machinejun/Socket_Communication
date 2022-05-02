@@ -16,7 +16,7 @@ public class ImagePanel extends JPanel {
 	public ImagePanel() {
 		setSize(500, 500);
 		try {
-			bgImage = ImageIO.read(new File(imagePath));
+			bgImage = ImageIO.read(new File(""+imagePath));
 		} catch (IOException e) {
 			System.out.println("이미지 파일을 찾지 못하였습니다.");
 		}

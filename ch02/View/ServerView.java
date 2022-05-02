@@ -89,11 +89,6 @@ public class ServerView extends JFrame implements ActionListener{
 		printLogButton.addActionListener(this);
 		endButton.addActionListener(this);
 	}
-	
-	
-	public static void main(String[] args) {
-		new ServerView();
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
